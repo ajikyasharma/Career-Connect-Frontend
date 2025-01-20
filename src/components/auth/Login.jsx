@@ -26,8 +26,33 @@ const Login = () => {
         setInput({ ...input, [e.target.name]: e.target.value });
     }
 
+        const validateForm = () => {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    
+            if (!emailRegex.test(input.email)) {
+                toast.error("Enter a valid email address!");
+                return false;
+            }
+
+            if (input.password.length < 3) {
+                toast.error("Password must be at least 3 characters long!");
+                return false;
+            }
+
+            if (!input.role) {
+                toast.error("Please select a role!");
+                return false;
+            }
+    
+            return true;
+        };
+
     const submitHandler = async (e) => {
         e.preventDefault();
+
+        if (!validateForm()) {
+            return;
+        }
         try {
             dispatch(setLoading(true));
             const res = await axios.post(`${USER_API_END_POINT}/login`, input, {

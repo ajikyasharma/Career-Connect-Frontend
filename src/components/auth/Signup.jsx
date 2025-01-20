@@ -22,7 +22,7 @@ const Signup = () => {
         role: "",
         file: ""
     });
-    const {loading,user} = useSelector(store=>store.auth);
+    const { loading, user } = useSelector(store => store.auth);
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -33,14 +33,48 @@ const Signup = () => {
         setInput({ ...input, file: e.target.files?.[0] });
     }
 
+    // const validateForm = () => {
+    //     const { fullname, email, phoneNumber, password, role } = input;
+    //     if (!fullname || !email || !phoneNumber || !password || !role) {
+    //         toast.error("All fields are required!");
+    //         return false;
+    //     }
+    //     return true;
+    // };
+
     const validateForm = () => {
-        const { fullname, email, phoneNumber, password, role } = input;
-        if (!fullname || !email || !phoneNumber || !password || !role) {
-            toast.error("All fields are required!");
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const phoneRegex = /^[6-9]\d{9}$/;
+
+        if (!input.fullname.trim()) {
+            toast.error("Full name is required!");
             return false;
         }
+        if (!emailRegex.test(input.email)) {
+            toast.error("Enter a valid email address!");
+            return false;
+        }
+        if (!phoneRegex.test(input.phoneNumber)) {
+            toast.error("Enter a valid 10-digit phone number starting with 6-9!");
+            return false;
+        }
+        if (input.password.length < 3) {
+            toast.error("Password must be at least 3 characters long!");
+            return false;
+        }
+        if (!input.role) {
+            toast.error("Please select a role!");
+            return false;
+        }
+
+        if (!input.file) {
+            toast.error("Please select the profile image!");
+            return false;
+        }
+
         return true;
     };
+
 
 
     const submitHandler = async (e) => {
@@ -72,16 +106,16 @@ const Signup = () => {
         } catch (error) {
             console.log(error);
             toast.error(error.response.data.message);
-        } finally{
+        } finally {
             dispatch(setLoading(false));
         }
     }
 
-    useEffect(()=>{
-        if(user){
+    useEffect(() => {
+        if (user) {
             navigate("/");
         }
-    },[])
+    }, [])
     return (
         <div>
             <Navbar />
